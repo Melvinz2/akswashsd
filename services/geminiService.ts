@@ -2,17 +2,24 @@
 import { GoogleGenAI, Chat } from "@google/genai";
 import { Project } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Helper to get AI instance safely. 
+// We initialize inside functions to avoid 'process is not defined' crashes 
+// at the module level if the environment isn't fully ready during initial bundle load.
+const getAI = () => {
+  return new GoogleGenAI({ apiKey: process.env.API_KEY });
+};
 
 export const explainCommand = async (command: string): Promise<string> => {
   try {
       const prompt = `Explain this CLI command to a beginner student in one short sentence: \`${command}\``;
+      const ai = getAI();
        const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
         contents: prompt,
       });
       return response.text || "Downloads the file.";
   } catch (e) {
+      console.error("AI Error:", e);
       return "Downloads the source code to your local machine.";
   }
 }
@@ -43,6 +50,7 @@ export const createProjectChatSession = (project: Project): Chat => {
     Start by briefly introducing the project and suggesting 2 interesting files they should look at first.
   `;
 
+  const ai = getAI();
   return ai.chats.create({
     model: 'gemini-2.5-flash',
     config: {
