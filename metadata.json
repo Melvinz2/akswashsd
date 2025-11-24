@@ -1,0 +1,5 @@
+{
+  "name": "CodeVault CLI",
+  "description": "A developer-centric platform for students to access course project source codes via web or simulated CLI commands, featuring AI-powered study guides.",
+  "requestFramePermissions": []
+}
